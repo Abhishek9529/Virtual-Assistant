@@ -1,5 +1,5 @@
 import { createContext, useState } from 'react'
-import main from '../gemini';
+// import main from '../gemini';
 
 export const datacontext = createContext()
 const UserContext = ({ children }) => {
@@ -23,19 +23,37 @@ const UserContext = ({ children }) => {
     }
 
     async function aiResponse(prompt) {
-        const aiAnswer = await main(prompt)
-        const astricRemovedResponse = aiAnswer.split("**") && aiAnswer.split("*")
+    try {
+        const res = await fetch('http://localhost:3001/api/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt: prompt }),
+        });
+
+        const data = await res.json();
+        const aiAnswer = data.response;
+
+        const astricRemovedResponse = aiAnswer.split("**") && aiAnswer.split("*");
         const newString = astricRemovedResponse[0]
             .replace(/Google/gi, "Abhishek Chavhan")
             .replace(/bada bhasha model/gi, "Nexa")
-            .replace(/large language model/gi, "Nexa")
+            .replace(/large language model/gi, "Nexa");
 
-        setPrompt(newString)
-        speak(newString)
-        setResponse(true)
+        setPrompt(newString);
+        speak(newString);
+        setResponse(true);
+
+    } catch (error) {
+        console.error("Error fetching from backend:", error);
+        const errorMessage = "Sorry, kuch problem ho gayi hai. Baad mein try karein.";
+        setPrompt(errorMessage);
+        speak(errorMessage);
+        setResponse(true);
     }
+}
 
-    // 
     let speechRecognition = window.speechRecognition || window.webkitSpeechRecognition
     let recognition = new speechRecognition()
     recognition.onresult = async (e) => {
