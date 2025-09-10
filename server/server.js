@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // Initialize GoogleGenerativeAI
-const genAI = new GoogleGenerativeAI(process.env.VITE_GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // API Endpoint
 app.post('/api/generate', async (req, res) => {
